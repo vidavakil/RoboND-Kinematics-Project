@@ -31,11 +31,11 @@ def correct_theta(theta):
     theta_min = min(abs(theta_small), abs(theta_big))
     theta_min = min(abs(theta), theta_min)
     if theta_min == abs(theta):
-	return theta
+        return theta
     elif theta_min == abs(theta_small):
-	return theta_small
+        return theta_small
     else:
-	return theta_big
+        return theta_big
 
 def test_code(test_case):
     ## Set up code
