@@ -1,8 +1,6 @@
 ## Project: Kinematics Pick & Place
 
 ---
-
-
 **Steps to complete the project:**  
 
 
@@ -21,7 +19,7 @@
 [image3]: ./misc_images/fk_links_diagram.png
 [image4]: ./misc_images/DH_diagram.png
 [image5]: ./misc_images/total_homogeneous_transform.png
-[image6]: ./misc_images/WC_equatios.png
+[image6]: ./misc_images/WC_equations.png
 [image7]: ./misc_images/first_three_joints_diagram.png
 [image8]: ./misc_images/first_three_joints_equations.png
 [image9]: ./misc_images/R3_6.png
@@ -127,7 +125,7 @@ I used a symbolic representation of a single DH transformation matrix about a gi
                      [                 0,                 0,           0,             1]])
 ```
 
-To derive individual transformations per each joint (e.g., `Ti_j`s), I simply replaced the parameters of the corresponding joint/link in the above formula. For example, to derive the transformation matrix for joint 2, I did the following:
+To derive individual transformations per each joint (e.g., Ti_j's), I simply replaced the parameters of the corresponding joint/link in the above formula. For example, to derive the transformation matrix for joint 2, I did the following:
 
 ```
         T1_2 = Ti.subs({q: q2, d: d2, alpha: alpha1, a: a1})
@@ -137,7 +135,7 @@ To derive individual transformations per each joint (e.g., `Ti_j`s), I simply re
 where `s_list = s.items()` and `s` is the dictionary for the DH table. With this, I avoided repeating the definition of the DH matrix 6 more times.
 
 
-To compute `T0_j`s matrices, that define the transformation matrix from the base_link to link `j`, I used the following recursive formula, for `j` from `0` to the end effector (note that this is not a line of code, and is only to illustrate the recursion):
+To compute T0_j matrices, that define the transformation matrix from the base_link to link j, I used the following recursive formula, for j from 0 to the end effector (note that this is not a line of code, and is only to illustrate the recursion):
 
 ```
         T0_j = T0_(j-1) * T(j-1)_j # base_link to link_j
@@ -149,7 +147,7 @@ As an example, T0_2 is coded as below:
         T0_2 = T0_1 * T1_2 # base_link to link_2
 ```
 
-Finally, to accommodate for the difference between the gripper frame in DH versus the one in URDF, we need a corrective rotation matrix as a 180 degree rotation around Z followed by a -90 degree rotation around the Y axis (applied to T0_G of DH). `T_Toal` would then be the total homogeneous transformation matrix between the base_link and the gripper_link.  
+Finally, to accommodate for the difference between the gripper frame in DH versus the one in URDF, we need a corrective rotation matrix as a 180 degree rotation around Z followed by a -90 degree rotation around the Y axis (applied to T0_G of DH). T_Toal would then be the total homogeneous transformation matrix between the base_link and the gripper_link.  
 
 ```
         R_z = Matrix([[     cos(pi),   -sin(pi),             0],
@@ -171,7 +169,7 @@ Given a 4x4 T_Total transformation matrix as above, its top left 3x3 matrix dete
 ![alt text][image5]
 
 
-Meanwhile, the orientation of the tool_tip is typically specified using three Euler angles (roll about the X axis, pitch about the Y axis, and yaw about the Z axis, in an extrinsic X_Y_Z rotation sequence). So, given `T_Total` above, its 3x3 composite rotation matrix is equivalent to the `R_rpy` matrix below (where `R_corr` was explained before):
+Meanwhile, the orientation of the tool_tip is typically specified using three Euler angles (roll about the X axis, pitch about the Y axis, and yaw about the Z axis, in an extrinsic X_Y_Z rotation sequence). So, given T_Total above, its 3x3 composite rotation matrix is equivalent to the R_rpy matrix below (where R_corr was explained before):
 
 ```
         R_y_pitch = Matrix([[  cos(_pitch),            0,    sin(_pitch)],
@@ -188,21 +186,21 @@ Meanwhile, the orientation of the tool_tip is typically specified using three Eu
         R_rpy = R_z_yaw * R_y_pitch * R_x_roll * R_corr
 ```
 
-which can be computed given a triplet of roll-pitch-yaw rotation angles for the gripper_link. Thus, given the position and orientation of the gripper_link, we can reconstruct `T_total`, the homogeneous transformation matrix from the base_link to the gripper_link.
+which can be computed given a triplet of roll-pitch-yaw rotation angles for the gripper_link. Thus, given the position and orientation of the gripper_link, we can reconstruct T_total, the homogeneous transformation matrix from the base_link to the gripper_link.
 
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
-Since we have a spherical wrist, and `O4 = O5 = O6` in our DH diagram, the inverse kinematics problem gets simplified:
+Since we have a spherical wrist, and O4 = O5 = O6 in our DH diagram, the inverse kinematics problem gets simplified:
 1- Given the gripper-link orientation, we can solve the last three joints of the robot.
-2- Given the gripper-link position, can derive wrist center (`O4 = O5 = O6`), and from that we can solve the first three joints of the robot. 
+2- Given the gripper-link position, can derive wrist center (O4 = O5 = O6), and from that we can solve the first three joints of the robot. 
 
-To derive Wrist Center (WC), we have the following equation (where d = d6 in the DH table, R0_6 is the 3x3 rotation matrix `R_rpy` describes before, and [px, py, pz] is the position of the gripper. 
+To derive Wrist Center (WC), we have the following equation (where d = d6 in the DH table, R0_6 is the 3x3 rotation matrix R_rpy describes before, and [px, py, pz] is the position of the gripper. 
 
 ![alt text][image6]
 
 
-Once we have the coordinates of WC (`O4 = O5 = O6`), and given the following diagram, we can solve for the first three angles. 
+Once we have the coordinates of WC (O4 = O5 = O6), and given the following diagram, we can solve for the first three angles. 
 ![alt text][image7]
 
 
@@ -216,7 +214,7 @@ Finally, to compute the last three angles, we have the following equation:
 ![alt text][image9]
 
 
-The right hand side of this equation can be computed given the orientation of the gripper (`R0_6`), and the first three joint angles (after we solve for them given the rotation of the gripper). Then, given the symbolic form of `R3_6` (using the symbolic form of `T3_6`), we can solve for the last three joint as shown below:
+The right hand side of this equation can be computed given the orientation of the gripper (R0_6), and the first three joint angles (after we solve for them given the rotation of the gripper). Then, given the symbolic form of R3_6 (extracted from the symbolic form of T3_6), we can solve for the last three joint as shown below:
 
 
 ```
