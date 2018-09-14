@@ -134,6 +134,44 @@ To derive individual transformations per each joint (e.g., Ti_j's), I simply rep
 
 where `s_list = s.items()` and `s` is the dictionary for the DH table. With this, I avoided repeating the definition of the DH matrix 6 more times.
 
+The following are the resulting transformations:
+
+```
+T0_1 = [[cos(q1), -sin(q1), 0,    0],
+        [sin(q1),  cos(q1), 0,    0],
+        [      0,        0, 1, 0.75],
+        [      0,        0, 0,    1]]
+
+T1_2 = [[sin(q2),  cos(q2), 0, 0.35],
+        [      0,        0, 1,    0],
+        [cos(q2), -sin(q2), 0,    0],
+        [      0,        0, 0,    1]]
+
+T2_3 = [[cos(q3), -sin(q3), 0, 1.25],
+        [sin(q3),  cos(q3), 0,    0],
+        [      0,        0, 1,    0],
+        [      0,        0, 0,    1]]
+
+T3_4 = [[ cos(q4), -sin(q4), 0, -0.054],
+        [       0,        0, 1,    1.5],
+        [-sin(q4), -cos(q4), 0,      0],
+        [       0,        0, 0,      1]]
+
+T4_5 = [[cos(q5), -sin(q5),  0, 0],
+        [      0,        0, -1, 0],
+        [sin(q5),  cos(q5),  0, 0],
+        [      0,        0,  0, 1]]
+
+T5_6 = [[ cos(q6), -sin(q6), 0, 0],
+        [       0,        0, 1, 0],
+        [-sin(q6), -cos(q6), 0, 0],
+        [       0,        0, 0, 1]]
+
+T6_G = [[1, 0, 0,     0],
+        [0, 1, 0,     0],
+        [0, 0, 1, 0.303],
+        [0, 0, 0,     1]]
+```
 
 To compute T0_j matrices, that define the transformation matrix from the base_link to link j, I used the following recursive formula, for j from 0 to the end effector (note that this is not a line of code, and is only to illustrate the recursion):
 

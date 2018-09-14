@@ -190,6 +190,14 @@ def handle_calculate_IK(req):
             T6_G = Ti.subs({q: q7, d: d7, alpha: alpha6, a: a6})
             T6_G = T6_G.subs(s_list)
 
+            print("T0_1 = ", T0_1)
+            print("T1_2 = ", T1_2)
+            print("T2_3 = ", T2_3)
+            print("T3_4 = ", T3_4)
+            print("T4_5 = ", T4_5)
+            print("T5_6 = ", T5_6)
+            print("T6_G = ", T6_G)
+
         T0_2 = simplify(T0_1 * T1_2) # base_link to link_2
         T0_3 = simplify(T0_2 * T2_3) # base_link to link_3
 
